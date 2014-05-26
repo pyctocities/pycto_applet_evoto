@@ -1,3 +1,4 @@
+package com.pycto.applet;
 import java.applet.Applet;
 import java.awt.Graphics;
 import java.security.KeyPair;

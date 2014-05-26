@@ -1,3 +1,4 @@
+package com.pycto.applet;
 
 public class CSR {
 	public String id;
