@@ -28,10 +28,7 @@ public class VotoElectronicoApplet extends Applet {
 			super.start();
 			
 			setBackground(Color.BLUE);						
-			setSize(new Dimension(1024,768));
-			
-			
-			
+			setSize(new Dimension(1024,400));
 			
 			try {
 				//Empieza aqui: Generamos a partir de keytool de java las claves publicas y privadas
