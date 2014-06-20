@@ -11,7 +11,10 @@ import java.security.SecureRandom;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
+import com.google.gson.Gson;
+
 public class EVotoApplet extends Applet {
+	public CSR request_cert = new CSR();
 
 	@Override
 	public void start() {
@@ -24,8 +27,6 @@ public class EVotoApplet extends Applet {
 		
 		try {
 
-			//*********************** SETUP **********************************
-
 			RSAPublicKey pubKey;
 			RSAPrivateKey privKey;
 
@@ -35,11 +36,16 @@ public class EVotoApplet extends Applet {
 			keyGen.initialize(1024, new SecureRandom());
 			KeyPair keypair = keyGen.genKeyPair();
 			
-			
 			privKey = (RSAPrivateKey)keypair.getPrivate();
 			pubKey = (RSAPublicKey)keypair.getPublic();
+			
+			request_cert.setId(Integer.toString(1));
+			request_cert.setPubKey(pubKey.getEncoded());
+			
+			Gson j = new Gson();
+			String pseudonimo_sin_blindar = j.toJson(request_cert);
 
-			String message = "LALALLALAL";
+			String message = pseudonimo_sin_blindar;
 			byte [] raw = message.getBytes("UTF8");
 
 			BigInteger m = new BigInteger(raw);
@@ -62,37 +68,32 @@ public class EVotoApplet extends Applet {
 			}
 			while(!gcd.equals(one) || r.compareTo(n)>=0 || r.compareTo(one)<=0);
 
-			//********************* BLIND ************************************
+			//********************* CEGADO ************************************
 
-			BigInteger b = ((r.modPow(e,n)).multiply(m)).mod(n);
-			System.out.println("\nb = " + b);
+			BigInteger pseudonimo_cegado = ((r.modPow(e,n)).multiply(m)).mod(n);
+			System.out.println("\nb = " + pseudonimo_cegado);
 			//must use modPow() - takes an eternity to compute:
 			//b = ((r.pow(e.intValue)).multiply(m)).mod(n);
 
-			//********************* SIGN *************************************
+			//********************* FIRMA (sera la de la CA, ahora es la del mismo usuario, es para ver como se firma) *************************************
 
-			BigInteger bs = b.modPow(d,n);
-			System.out.println("bs = " + bs);
+			BigInteger pseudonimo_cegado_signado = pseudonimo_cegado.modPow(d,n);
+			System.out.println("bs = " + pseudonimo_cegado_signado);
 
-			//********************* UNBLIND **********************************
+			//********************* DESCEGADO **********************************
 
-			BigInteger s = r.modInverse(n).multiply(bs).mod(n);
-			System.out.println("s = " + s);
+			BigInteger pseudonimo_descegado = r.modInverse(n).multiply(pseudonimo_cegado_signado).mod(n);
+			System.out.println("s = " + pseudonimo_descegado);
 
-			//********************* VERIFY ***********************************
+			//********************* VERIFICACIÓN ***********************************
 
-			//signature of m should = (m^d) mod n
+			//LA signatura de M deberia ser = (m^d) mod n
 			BigInteger sig_of_m = m.modPow(d,n);
 			System.out.println("sig_of_m = " + sig_of_m);
 
-			//check that s is equal to a signature of m:
-			System.out.println(s.equals(sig_of_m));
+			//Mirar si la signatura es la misma
+			System.out.println(pseudonimo_descegado.equals(sig_of_m));
 
-			//try to verify using the RSA formula
-			BigInteger check = s.modPow(e,n);
-			System.out.println(m.equals(check));
-
-			//BOTH TESTS RETURN FALSE - s must not be a valid signature of m 
 		}
 		catch(Exception ex) {
 			System.out.println("ERROR: ");
