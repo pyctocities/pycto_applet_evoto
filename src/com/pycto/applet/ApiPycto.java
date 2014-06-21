@@ -57,7 +57,7 @@ public class ApiPycto {
 	}
 	
 	
-	public String pedir_firmar_CSR_cegado() throws NoSuchAlgorithmException, NoSuchProviderException, UnsupportedEncodingException{
+	public String pedir_firmar_CSR_cegado(String username) throws NoSuchAlgorithmException, NoSuchProviderException, UnsupportedEncodingException{
 		
 		String certificado_cegado_firmado = null;
 		
@@ -73,7 +73,7 @@ public class ApiPycto {
 		privKey = (RSAPrivateKey)keypair.getPrivate();
 		pubKey = (RSAPublicKey)keypair.getPublic();
 		
-		request_cert.setId(Integer.toString(1));
+		request_cert.setId(username);
 		request_cert.setPubKey(pubKey.getEncoded());
 		
 		Gson j = new Gson();

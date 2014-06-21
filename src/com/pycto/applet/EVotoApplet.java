@@ -103,7 +103,7 @@ public class EVotoApplet extends Applet {
 					if(api.login(user.getText(), pass.getText()))
 					{
 						try {
-							String result = api.pedir_firmar_CSR_cegado();
+							String result = api.pedir_firmar_CSR_cegado(user.getText());
 							BigInteger csr_firmado = new BigInteger(result);
 							
 							JOptionPane.showMessageDialog(null, csr_firmado.toString());
