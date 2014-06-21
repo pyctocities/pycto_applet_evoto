@@ -10,9 +10,12 @@ import java.awt.Label;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
@@ -99,12 +102,27 @@ public class EVotoApplet extends Applet {
 					
 					if(api.login(user.getText(), pass.getText()))
 					{
-						JOptionPane.showMessageDialog(null, "Login correcto!");
+						try {
+							String result = api.pedir_firmar_CSR_cegado();
+							BigInteger csr_firmado = new BigInteger(result);
+							
+							JOptionPane.showMessageDialog(null, csr_firmado.toString());
+
+						} catch (NoSuchAlgorithmException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (NoSuchProviderException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (UnsupportedEncodingException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 
 					}
 					else
 					{
-						JOptionPane.showMessageDialog(null, "ERROR!");
+						JOptionPane.showMessageDialog(null, "Usuario/Contraseña incorrectos!");
 
 					}
 
