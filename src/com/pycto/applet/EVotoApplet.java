@@ -32,6 +32,7 @@ public class EVotoApplet extends Applet {
 	public Label userlabel = new Label("Usuario: ");
 	public Label passlabel = new Label("Password: ");
 	public Label idfotolabel = new Label("Id foto: ");
+	public Label titol = new Label("VOTACIÓN ELECTRONICA");
 
 	
 	@Override
@@ -41,30 +42,32 @@ public class EVotoApplet extends Applet {
 		
 		setBackground(Color.decode("#6D91B4"));		
 		//setSize(new Dimension(1024,400));
-		setSize(new Dimension(300,300));
-		
+		setSize(new Dimension(450,300));
+		setLayout(null); 
 
 		user = new TextField(30);
 		pass = new TextField(30);
 		id_foto = new TextField(30);
 	    okButton = new Button("Votar!"); 
-
 	    
-	    userlabel.setBounds(100,85,50,20);
-	    user.setBounds(200,70,200,20);
+	    titol.setBounds(150,30,200,20);
+	    titol.setForeground(Color.RED);
+	    
+	    userlabel.setBounds(50,85,50,20);
+	    user.setBounds(150,85,200,20);
 	    user.setVisible(true);
 	    
-	    passlabel.setBounds(100,135,50,20);
-	    pass.setBounds(200,120,200,20);
+	    passlabel.setBounds(50,135,60,20);
+	    pass.setBounds(150,135,200,20);
 	    pass.setEchoChar('*');
 	    
-	    idfotolabel.setBounds(100,185,50,20);
-	    id_foto.setBounds(200,170,200,20);
+	    idfotolabel.setBounds(50,185,50,20);
+	    id_foto.setBounds(150,185,200,20);
 	    
-	    okButton.setBounds(200,230,100,20);
-	    
+	    okButton.setBounds(150,230,100,20);
 	    okButton.addActionListener(l);
 	    
+	    add(titol);
 	    add(userlabel);
 	    add(user);
 	    add(passlabel);
