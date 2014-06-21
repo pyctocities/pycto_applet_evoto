@@ -33,12 +33,15 @@ public class EVotoApplet extends Applet {
 	public Label passlabel = new Label("Password: ");
 	public Label idfotolabel = new Label("Id foto: ");
 	public Label titol = new Label("VOTACIÓN ELECTRONICA");
+	ApiPycto api;
 
 	
 	@Override
 	public void start() {
 		// TODO Auto-generated method stub
 		super.start();
+		
+		api = new ApiPycto();
 		
 		setBackground(Color.decode("#6D91B4"));		
 		//setSize(new Dimension(1024,400));
@@ -92,8 +95,19 @@ public class EVotoApplet extends Applet {
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
-					vota();
-					JOptionPane.showMessageDialog(null, "Vota hermano!");
+					//vota();
+					
+					if(api.login(user.getText(), pass.getText()))
+					{
+						JOptionPane.showMessageDialog(null, "Login correcto!");
+
+					}
+					else
+					{
+						JOptionPane.showMessageDialog(null, "ERROR!");
+
+					}
+
 				
 		}
 	};
