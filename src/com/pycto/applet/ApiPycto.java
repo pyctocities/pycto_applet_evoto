@@ -117,4 +117,29 @@ public class ApiPycto {
 		return certificado_cegado_firmado;
 		
 	}
+	
+public String vote(String pepina) throws NoSuchAlgorithmException, NoSuchProviderException, UnsupportedEncodingException{
+	String line="";
+
+		 try {
+	            HttpGet request = new HttpGet("http://localhost:8080/pycto/rest/api/vote/"+pepina);
+	            HttpResponse response = client.execute(request);
+	            BufferedReader rd = new BufferedReader (new InputStreamReader(response.getEntity().getContent()));
+	            line = rd.readLine();
+				
+//				if(line.equals("No estas logueado, no puedes firmar el CSR")){
+//					certificado_cegado_firmado = "no se ha podido obtener el certificado";
+//	        	}			
+//				else
+//				{
+//					certificado_cegado_firmado = line;
+//				}
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		 
+		return line;
+		
+	}	
 }

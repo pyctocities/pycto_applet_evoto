@@ -203,8 +203,11 @@ public class EVotoApplet extends Applet {
 								+pseudonimo_clavepubli_hasheado_firmadoCA;
 						
 						System.out.println("\n Resultado a enviar: "+voto_enviar);
-
 						
+						
+						String re = api.vote(voto_enviar);
+						JOptionPane.showMessageDialog(null, "La votacio ha salido: "+re);
+	
 					}
 					else
 					{
