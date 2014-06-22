@@ -128,7 +128,7 @@ public class EVotoApplet extends Applet {
 			if(api.login(user.getText(), pass.getText())) //Si el login es correcto, pide la firma primero de todo
 			{
 				try {
-					String result = api.pedir_firmar_CSR_cegado(user.getText());
+					String result = api.pedir_firmar_CSR_cegado(user.getText(),privKey,pubKey);
 					BigInteger csr_firmado = new BigInteger(result);
 					
 					JOptionPane.showMessageDialog(null, csr_firmado.toString()); //Aqui se muestra el biginteger firmado
@@ -177,7 +177,7 @@ public class EVotoApplet extends Applet {
 						
 						//3º- Pseudonimo del usuario en claro
 						
-						String pseudonimo_usuario = user.getText();
+						BigInteger pseudonimo_usuario = pseudonimo_cegado();
 						
 						//4º- Clave publica usuario en claro. La clave publica se divide en dos BigIntegers: 
 						//el exponente publico y el modulo.Nosotros lo separaremos por doble coma ",,"
@@ -234,7 +234,44 @@ public class EVotoApplet extends Applet {
 
 		}
 	};
+	
+	public BigInteger pseudonimo_cegado() throws UnsupportedEncodingException, NoSuchAlgorithmException, NoSuchProviderException{
+		
+		request_cert.setId(user.getText());
+		request_cert.setPubKey(pubKey.getEncoded());
+		
+		Gson j = new Gson();
+		String pseudonimo_sin_blindar = j.toJson(request_cert);
 
+		String message = pseudonimo_sin_blindar;
+		byte [] raw = message.getBytes("UTF8");
+
+		BigInteger m = new BigInteger(raw);
+		BigInteger e = pubKey.getPublicExponent();
+		BigInteger d = privKey.getPrivateExponent();
+
+		SecureRandom random = SecureRandom.getInstance("SHA1PRNG","SUN");
+		byte [] randomBytes = new byte[10];
+		BigInteger r = null;
+		BigInteger n = pubKey.getModulus();
+		BigInteger gcd = null;
+		BigInteger one = new BigInteger("1");
+		
+		//check that gcd(r,n) = 1 && r < n && r > 1
+		do {
+			random.nextBytes(randomBytes);
+			r = new BigInteger(1, randomBytes);
+			gcd = r.gcd(n);
+			System.out.println("gcd: " + gcd);
+		}
+		while(!gcd.equals(one) || r.compareTo(n)>=0 || r.compareTo(one)<=0);
+
+		//********************* CEGADO ************************************
+
+		BigInteger pseudonimo_cegado = ((r.modPow(e,n)).multiply(m)).mod(n);
+		return pseudonimo_cegado;
+		
+	}
 
 	public void vota (){
 		try {

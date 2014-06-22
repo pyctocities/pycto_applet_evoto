@@ -57,21 +57,9 @@ public class ApiPycto {
 	}
 	
 	
-	public String pedir_firmar_CSR_cegado(String username) throws NoSuchAlgorithmException, NoSuchProviderException, UnsupportedEncodingException{
+	public String pedir_firmar_CSR_cegado(String username,RSAPrivateKey privKey,RSAPublicKey pubKey) throws NoSuchAlgorithmException, NoSuchProviderException, UnsupportedEncodingException{
 		
 		String certificado_cegado_firmado = null;
-		
-		RSAPublicKey pubKey;
-		RSAPrivateKey privKey;
-
-		//generate the RSA key pair
-		KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
-		//initialise the KeyGenerator with a random number.
-		keyGen.initialize(1024, new SecureRandom());
-		KeyPair keypair = keyGen.genKeyPair();
-		
-		privKey = (RSAPrivateKey)keypair.getPrivate();
-		pubKey = (RSAPublicKey)keypair.getPublic();
 		
 		request_cert.setId(username);
 		request_cert.setPubKey(pubKey.getEncoded());
