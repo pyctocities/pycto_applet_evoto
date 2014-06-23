@@ -142,12 +142,11 @@ public class EVotoApplet extends Applet {
 						
 						
 						//1º - JSON de votos en claro con las ids de las fotos
-						String json_id_fotos ="["+idfotos[0]
+						String json_id_fotos =idfotos[0]
 								+"&"+idfotos[1]
 								+"&"+idfotos[2]
 								+"&"+idfotos[3]
-								+"&"+idfotos[4]
-								+"]";						
+								+"&"+idfotos[4];						
 						
 						//2º- HASH de las ids de las fotos encriptado con la clave privada del usuario
 						MessageDigest md = null;
