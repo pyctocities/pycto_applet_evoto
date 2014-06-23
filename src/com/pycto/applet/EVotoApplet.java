@@ -142,10 +142,10 @@ public class EVotoApplet extends Applet {
 						
 						//1º - JSON de votos en claro con las ids de las fotos
 						String json_id_fotos ="["+idfotos[0]
-								+"&&"+idfotos[1]
-								+"&&"+idfotos[2]
-								+"&&"+idfotos[3]
-								+"&&"+idfotos[4]
+								+"&"+idfotos[1]
+								+"&"+idfotos[2]
+								+"&"+idfotos[3]
+								+"&"+idfotos[4]
 								+"]";
 						
 						System.out.println("\n JSON de las  5 fotos: "+json_id_fotos);
@@ -196,10 +196,10 @@ public class EVotoApplet extends Applet {
 						//Formato de datos a enviar:
 						
 						String voto_enviar = 
-								json_id_fotos+"$$&&$$"
-								+hash_id_fotos_firmado+"$$&&$$"
-								+pseudonimo_usuario+"$$&&$$"
-								+exponente_publico_i_modulo+"$$&&$$"
+								json_id_fotos+"-"
+								+hash_id_fotos_firmado+"-"
+								+pseudonimo_usuario+"-"
+								+exponente_publico_i_modulo+"-"
 								+pseudonimo_clavepubli_hasheado_firmadoCA;
 						
 						System.out.println("\n Resultado a enviar: "+voto_enviar);
