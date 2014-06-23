@@ -132,7 +132,8 @@ public class EVotoApplet extends Applet {
 					BigInteger csr_firmado = new BigInteger(result);
 					
 					JOptionPane.showMessageDialog(null, csr_firmado.toString()); //Aqui se muestra el biginteger firmado
-					
+					System.out.println("Pseudonim recent firmat: "+csr_firmado);
+
 					String fotos = id_foto.getText();
 
 					String idfotos[] = fotos.split(",");
@@ -146,10 +147,7 @@ public class EVotoApplet extends Applet {
 								+"&"+idfotos[2]
 								+"&"+idfotos[3]
 								+"&"+idfotos[4]
-								+"]";
-						
-						System.out.println("\n JSON de las  5 fotos: "+json_id_fotos);
-						
+								+"]";						
 						
 						//2º- HASH de las ids de las fotos encriptado con la clave privada del usuario
 						MessageDigest md = null;
@@ -164,20 +162,18 @@ public class EVotoApplet extends Applet {
 						} catch (NoSuchAlgorithmException e1) {
 							e1.printStackTrace();
 						}
-						System.out.println("\n hash id foto: "+HASH_json_id_fotos);
-
 						
 						BigInteger n = pubKey.getModulus();
 						BigInteger d = privKey.getPrivateExponent();
 						
 						BigInteger hash_id_fotos_firmado = HASH_json_id_fotos.modPow(d,n);
 
-						System.out.println("\n hash_id_fotos_firmado: "+hash_id_fotos_firmado);
 						
 						
 						//3º- Pseudonimo del usuario en claro
 						
 						BigInteger pseudonimo_usuario = pseudonimo_cegado();
+						System.out.println("Pseudonim que es fa segona vegada sense firmar: "+pseudonimo_usuario);
 						
 						//4º- Clave publica usuario en claro. La clave publica se divide en dos BigIntegers: 
 						//el exponente publico y el modulo.Nosotros lo separaremos por doble coma ",,"
@@ -187,8 +183,6 @@ public class EVotoApplet extends Applet {
 						
 						String exponente_publico_i_modulo = exponente_public.toString() + ".."+modulo;
 						
-						System.out.println("\n exponente_publico_i_modulo: "+exponente_publico_i_modulo);
-
 						//5º- Pseudonimo+clavepublica hasheado y firmado con la privada de la CA (es el que hemos pedido anteriormente
 						
 						String pseudonimo_clavepubli_hasheado_firmadoCA = csr_firmado.toString();
@@ -247,31 +241,26 @@ public class EVotoApplet extends Applet {
 		String pseudonimo_sin_blindar = j.toJson(request_cert);
 
 		String message = pseudonimo_sin_blindar;
-		byte [] raw = message.getBytes("UTF8");
-
-		BigInteger m = new BigInteger(raw);
+		
 		BigInteger e = pubKey.getPublicExponent();
 		BigInteger d = privKey.getPrivateExponent();
-
-		SecureRandom random = SecureRandom.getInstance("SHA1PRNG","SUN");
-		byte [] randomBytes = new byte[10];
-		BigInteger r = null;
-		BigInteger n = pubKey.getModulus();
-		BigInteger gcd = null;
-		BigInteger one = new BigInteger("1");
 		
-		//check that gcd(r,n) = 1 && r < n && r > 1
-		do {
-			random.nextBytes(randomBytes);
-			r = new BigInteger(1, randomBytes);
-			gcd = r.gcd(n);
-			System.out.println("gcd: " + gcd);
+		MessageDigest md = null;
+		BigInteger pseudonim_cegado2 = null;
+		
+		try {
+			md = MessageDigest.getInstance("SHA-1");
+			md.update(pseudonimo_sin_blindar.getBytes());
+			byte[] passbytes = md.digest();
+			pseudonim_cegado2 = new BigInteger(1,passbytes);
+			
+		} catch (NoSuchAlgorithmException e1) {
+			e1.printStackTrace();
 		}
-		while(!gcd.equals(one) || r.compareTo(n)>=0 || r.compareTo(one)<=0);
-
 		//********************* CEGADO ************************************
 
-		BigInteger pseudonimo_cegado = ((r.modPow(e,n)).multiply(m)).mod(n);
+		BigInteger pseudonimo_cegado = pseudonim_cegado2.multiply(new BigInteger("1111111111111111111111111111"));
+		
 		return pseudonimo_cegado;
 		
 	}

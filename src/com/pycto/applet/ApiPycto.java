@@ -9,6 +9,7 @@ import java.math.BigInteger;
 import java.net.URLEncoder;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
@@ -92,20 +93,23 @@ public class ApiPycto {
 		BigInteger gcd = null;
 		BigInteger one = new BigInteger("1");
 
-		//check that gcd(r,n) = 1 && r < n && r > 1
-		do {
-			random.nextBytes(randomBytes);
-			r = new BigInteger(1, randomBytes);
-			gcd = r.gcd(n);
-			System.out.println("gcd: " + gcd);
+		MessageDigest md = null;
+		BigInteger pseudonim_cegado2 = null;
+		
+		try {
+			md = MessageDigest.getInstance("SHA-1");
+			md.update(pseudonimo_sin_blindar.getBytes());
+			byte[] passbytes = md.digest();
+			pseudonim_cegado2 = new BigInteger(1,passbytes);
+			
+		} catch (NoSuchAlgorithmException e1) {
+			e1.printStackTrace();
 		}
-		while(!gcd.equals(one) || r.compareTo(n)>=0 || r.compareTo(one)<=0);
+		
+		BigInteger pseudonimo_cegado = pseudonim_cegado2.multiply(new BigInteger("1111111111111111111111111111"));
+		
+		System.out.println("Pseudonim abans de firmar: "+pseudonimo_cegado);
 
-		//********************* CEGADO ************************************
-
-		BigInteger pseudonimo_cegado = ((r.modPow(e,n)).multiply(m)).mod(n);
-		System.out.println("\n Pseudonimo a enviar = " + pseudonimo_cegado);
-		System.out.println("\n Pseudonimo a enviar en string= " + pseudonimo_cegado.toString());
 
 		try {
 			HttpGet request = new HttpGet("http://localhost:8080/pycto/rest/api/signcertificate/"+pseudonimo_cegado.toString());
@@ -135,7 +139,6 @@ public class ApiPycto {
 	public String vote(String pepina) throws NoSuchAlgorithmException, NoSuchProviderException, UnsupportedEncodingException{
 		String line="";
 		String url = "http://localhost:8080/pycto/rest/api/vote/"+URLEncoder.encode(pepina);
-		System.out.println();
 		try {
 			HttpGet request = new HttpGet(url);
 			HttpResponse response = client.execute(request);
