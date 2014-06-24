@@ -131,8 +131,8 @@ public class EVotoApplet extends Applet {
 					String result = api.pedir_firmar_CSR_cegado(user.getText(),privKey,pubKey);
 					BigInteger csr_firmado = new BigInteger(result);
 					
-					JOptionPane.showMessageDialog(null, csr_firmado.toString()); //Aqui se muestra el biginteger firmado
-					System.out.println("Pseudonim recent firmat: "+csr_firmado);
+					JOptionPane.showMessageDialog(null, "Certificado firmado correctamente por la CA, se procede al voto"); //Aqui se muestra el biginteger firmado
+					System.out.println("Certificado firmado correctamente por la CA");
 
 					String fotos = id_foto.getText();
 
@@ -199,6 +199,7 @@ public class EVotoApplet extends Applet {
 						
 						
 						String re = api.vote(voto_enviar);
+						
 						JOptionPane.showMessageDialog(null, "La votacio ha salido: "+re);
 	
 					}

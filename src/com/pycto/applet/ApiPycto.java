@@ -35,8 +35,12 @@ import com.google.gson.Gson;
 
 public class ApiPycto {
 	public CSR request_cert = new CSR();
-	
 	public HttpClient client = new DefaultHttpClient();
+	
+	public String URL_BASE="http://localhost:8080/pycto/rest/api/";
+	//Para HTTPS se tendra que utilizar la siguiente URL
+	//public String URL_BASE="https://localhost:8081/pycto/rest/api/";   
+
 
 	public boolean login(String user, String password){
 
@@ -44,7 +48,7 @@ public class ApiPycto {
 
 		try {
 			
-			HttpGet request = new HttpGet("http://localhost:8080/pycto/rest/api/login/"+user+"/"+password);
+			HttpGet request = new HttpGet(URL_BASE+"login/"+user+"/"+password);
 			HttpResponse response = client.execute(request);
 			BufferedReader rd = new BufferedReader (new InputStreamReader(response.getEntity().getContent()));
 			String line = rd.readLine();
@@ -112,6 +116,7 @@ public class ApiPycto {
 
 
 		try {
+			System.out.println(URL_BASE+"signcertificate/"+pseudonimo_cegado.toString());
 			HttpGet request = new HttpGet("http://localhost:8080/pycto/rest/api/signcertificate/"+pseudonimo_cegado.toString());
 			HttpResponse response = client.execute(request);
 			BufferedReader rd = new BufferedReader (new InputStreamReader(response.getEntity().getContent()));
@@ -138,7 +143,8 @@ public class ApiPycto {
 
 	public String vote(String pepina) throws NoSuchAlgorithmException, NoSuchProviderException, UnsupportedEncodingException{
 		String line="";
-		String url = "http://localhost:8080/pycto/rest/api/vote/"+URLEncoder.encode(pepina);
+		String url = URL_BASE+"vote/"+URLEncoder.encode(pepina);
+		System.out.println("URL: "+url);
 		try {
 			HttpGet request = new HttpGet(url);
 			HttpResponse response = client.execute(request);
