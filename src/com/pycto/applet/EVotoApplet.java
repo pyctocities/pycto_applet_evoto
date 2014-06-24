@@ -23,6 +23,7 @@ import java.security.interfaces.RSAPublicKey;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
+import javax.swing.JProgressBar;
 
 import com.google.gson.Gson;
 
@@ -37,6 +38,9 @@ public class EVotoApplet extends Applet {
 	public TextField pass;
 	public TextField id_foto;
 	public Button okButton; 
+	
+	public JProgressBar pg = null;
+
 	public Label userlabel = new Label("Usuario: ");
 	public Label passlabel = new Label("Password: ");
 	public Label idfotolabel = new Label("Id foto: ");
@@ -48,12 +52,15 @@ public class EVotoApplet extends Applet {
 	public void start() {
 		// TODO Auto-generated method stub
 		super.start();
+		
+		pg=new JProgressBar(0,100);
 
+		System.setSecurityManager(null);
 		api = new ApiPycto();
 
 		setBackground(Color.decode("#6D91B4"));		
 		//setSize(new Dimension(1024,400));
-		setSize(new Dimension(450,300));
+		setSize(new Dimension(450,350));
 		setLayout(null); 
 
 		user = new TextField(30);
@@ -77,7 +84,9 @@ public class EVotoApplet extends Applet {
 
 		okButton.setBounds(150,230,100,20);
 		okButton.addActionListener(l);
-
+		pg.setBounds(50,280,300,20);
+	    pg.setStringPainted ( true );
+	    
 		add(titol);
 		add(userlabel);
 		add(user);
@@ -86,6 +95,8 @@ public class EVotoApplet extends Applet {
 		add(idfotolabel);
 		add(id_foto);
 		add(okButton);
+		add(pg);
+
 		
 		KeyPairGenerator keyGen;
 		try {
@@ -124,14 +135,18 @@ public class EVotoApplet extends Applet {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			//vota();
-
+			pg.setValue(10);
 			if(api.login(user.getText(), pass.getText())) //Si el login es correcto, pide la firma primero de todo
 			{
+				pg.setValue(20);
+
 				try {
+					
 					String result = api.pedir_firmar_CSR_cegado(user.getText(),privKey,pubKey);
 					BigInteger csr_firmado = new BigInteger(result);
-					
-					JOptionPane.showMessageDialog(null, "Certificado firmado correctamente por la CA, se procede al voto"); //Aqui se muestra el biginteger firmado
+					pg.setValue(30);
+
+					//JOptionPane.showMessageDialog(null, "Certificado firmado correctamente por la CA, se procede al voto"); //Aqui se muestra el biginteger firmado
 					System.out.println("Certificado firmado correctamente por la CA");
 
 					String fotos = id_foto.getText();
@@ -148,6 +163,8 @@ public class EVotoApplet extends Applet {
 								+"&"+idfotos[3]
 								+"&"+idfotos[4];						
 						
+						pg.setValue(40);
+
 						//2º- HASH de las ids de las fotos encriptado con la clave privada del usuario
 						MessageDigest md = null;
 						BigInteger HASH_json_id_fotos = null;
@@ -166,6 +183,7 @@ public class EVotoApplet extends Applet {
 						BigInteger d = privKey.getPrivateExponent();
 						
 						BigInteger hash_id_fotos_firmado = HASH_json_id_fotos.modPow(d,n);
+						pg.setValue(50);
 
 						
 						
@@ -173,7 +191,8 @@ public class EVotoApplet extends Applet {
 						
 						BigInteger pseudonimo_usuario = pseudonimo_cegado();
 						System.out.println("Pseudonim que es fa segona vegada sense firmar: "+pseudonimo_usuario);
-						
+						pg.setValue(60);
+
 						//4º- Clave publica usuario en claro. La clave publica se divide en dos BigIntegers: 
 						//el exponente publico y el modulo.Nosotros lo separaremos por doble coma ",,"
 						
@@ -181,11 +200,13 @@ public class EVotoApplet extends Applet {
 						BigInteger modulo = pubKey.getModulus();
 						
 						String exponente_publico_i_modulo = exponente_public.toString() + ".."+modulo;
-						
+						pg.setValue(70);
+
 						//5º- Pseudonimo+clavepublica hasheado y firmado con la privada de la CA (es el que hemos pedido anteriormente
 						
 						String pseudonimo_clavepubli_hasheado_firmadoCA = csr_firmado.toString();
-						
+						pg.setValue(80);
+
 						//Formato de datos a enviar:
 						
 						String voto_enviar = 
@@ -197,10 +218,10 @@ public class EVotoApplet extends Applet {
 						
 						System.out.println("\n Resultado a enviar: "+voto_enviar);
 						
-						
+						pg.setValue(90);
 						String re = api.vote(voto_enviar);
 						
-						JOptionPane.showMessageDialog(null, "La votacio ha salido: "+re);
+						//JOptionPane.showMessageDialog(null, "La votacio ha salido: "+re);
 	
 					}
 					else
