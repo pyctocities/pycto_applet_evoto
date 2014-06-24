@@ -221,6 +221,9 @@ public class EVotoApplet extends Applet {
 						pg.setValue(90);
 						String re = api.vote(voto_enviar);
 						
+						System.out.println("\n Resultado de votacion: "+re);
+						pg.setValue(100);
+
 						//JOptionPane.showMessageDialog(null, "La votacio ha salido: "+re);
 	
 					}
